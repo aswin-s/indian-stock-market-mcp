@@ -1,20 +1,49 @@
 {
-  "name": "indian-stock-mcp-server",
-  "version": "1.0.1",
-  "description": "MCP server for Indian Stock Market API",
+  "name": "indian-stock-market-mcp",
+  "version": "1.1.0",
+  "description": "MCP server for Indian stock market data — works with Claude Desktop, Claude Code, Cursor, Windsurf, and any MCP-compatible client",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "indian-stock-market-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "node test-server.js"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "tsc"
+  },
+  "keywords": [
+    "mcp",
+    "indian-stock-market",
+    "nse",
+    "bse",
+    "stocks",
+    "model-context-protocol",
+    "claude",
+    "cursor",
+    "windsurf"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aswin-s/indian-stock-market-mcp.git"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.5.0",
-    "axios": "^1.7.0",
-    "dotenv": "^16.4.0"
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "axios": "^1.7.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.0"
+    "@types/node": "^25.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
