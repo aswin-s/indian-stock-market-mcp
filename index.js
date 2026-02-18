@@ -9,7 +9,11 @@ import {
 import axios from 'axios';
 // Environment variables are passed via MCP server config in .claude.json
 
-const API_BASE_URL = process.env.INDIAN_STOCK_API_BASE_URL || 'https://api.indianstocks.com';
+const API_BASE_URL = process.env.INDIAN_STOCK_API_BASE_URL;
+if (!API_BASE_URL) {
+  console.error('Error: INDIAN_STOCK_API_BASE_URL environment variable is required');
+  process.exit(1);
+}
 const API_KEYS = [
   process.env.INDIAN_STOCK_API_KEY,
   process.env.INDIAN_STOCK_API_KEY_ALTERNATE,
