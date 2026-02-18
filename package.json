@@ -19,7 +19,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "tsc"
   },
   "keywords": [
     "mcp",

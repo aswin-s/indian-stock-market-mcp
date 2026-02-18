@@ -4,7 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
+import axios, { type AxiosInstance, type AxiosResponse, type Method } from 'axios';
 
 interface ApiError {
   error: true;
@@ -29,21 +29,21 @@ if (API_KEYS.length === 0) {
 
 let currentKeyIndex = 0;
 
-function createApiClient(apiKey: string): AxiosInstance {
-  return axios.create({
+const apiClients: AxiosInstance[] = API_KEYS.map(apiKey =>
+  axios.create({
     baseURL: API_BASE_URL,
     headers: {
       'x-api-key': apiKey,
       'Content-Type': 'application/json',
     },
     timeout: 30000,
-  });
-}
+  })
+);
 
-async function apiRequest(method: string, url: string, config: Record<string, unknown> = {}): Promise<AxiosResponse> {
+async function apiRequest(method: Method, url: string, config: Record<string, unknown> = {}): Promise<AxiosResponse> {
   for (let attempt = 0; attempt < API_KEYS.length; attempt++) {
     const keyIndex = (currentKeyIndex + attempt) % API_KEYS.length;
-    const client = createApiClient(API_KEYS[keyIndex]);
+    const client = apiClients[keyIndex];
     try {
       const response = await client.request({ ...config, method, url });
       return response;
@@ -88,23 +88,6 @@ function filterResponse(data: any, toolName: string): unknown {
     }
   }
 
-  if (Array.isArray(data)) {
-    return data.slice(0, 20).map(item => {
-      if (typeof item === 'object' && item !== null) {
-        return {
-          name: item.name,
-          symbol: item.symbol,
-          price: item.price || item.currentPrice || item.ltp,
-          change: item.change || item.priceChange,
-          changePercent: item.changePercent || item.pChange,
-          volume: item.volume,
-          value: item.value || item.turnover,
-        };
-      }
-      return item;
-    });
-  }
-
   if (toolName === 'get_historical_data' && data && data.data && Array.isArray(data.data)) {
     return {
       ...data,
@@ -135,6 +118,23 @@ function filterResponse(data: any, toolName: string): unknown {
         link: item.link || item.url,
       }));
     }
+  }
+
+  if (Array.isArray(data)) {
+    return data.slice(0, 20).map(item => {
+      if (typeof item === 'object' && item !== null) {
+        return {
+          name: item.name,
+          symbol: item.symbol,
+          price: item.price || item.currentPrice || item.ltp,
+          change: item.change || item.priceChange,
+          changePercent: item.changePercent || item.pChange,
+          volume: item.volume,
+          value: item.value || item.turnover,
+        };
+      }
+      return item;
+    });
   }
 
   return data;
@@ -190,7 +190,7 @@ function toolError(error: unknown): CallToolResult {
   return { content: [{ type: 'text', text: JSON.stringify(handleApiError(error), null, 2) }], isError: true };
 }
 
-async function callApi(method: string, url: string, toolName: string, config: Record<string, unknown> = {}): Promise<CallToolResult> {
+async function callApi(method: Method, url: string, toolName: string, config: Record<string, unknown> = {}): Promise<CallToolResult> {
   const response = await apiRequest(method, url, config);
   let filteredData = filterResponse(response.data, toolName);
   filteredData = truncateIfNeeded(filteredData);
