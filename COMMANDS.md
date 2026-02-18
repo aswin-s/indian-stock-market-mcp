@@ -6,33 +6,18 @@ Quick reference for installing and managing the Indian Stock Market MCP server.
 
 ### Method 1: Using Claude CLI (Recommended)
 
-**Interactive installation:**
 ```bash
-claude mcp add indian-stock-market
-```
-
-Follow the prompts:
-1. Select: `node`
-2. Enter path: `/Users/aswin/Documents/Projects/trade-assist/mcp-server/index.js`
-3. Add env var `INDIAN_STOCK_API_KEY`: `your_key`
-4. Add env var `INDIAN_STOCK_API_BASE_URL`: `https://your-url.com`
-5. Restart Claude Code
-
-**One-line installation:**
-```bash
-claude mcp add indian-stock-market \
-  --type node \
-  --command /Users/aswin/Documents/Projects/trade-assist/mcp-server/index.js \
-  --env INDIAN_STOCK_API_KEY=your_api_key_here \
-  --env INDIAN_STOCK_API_BASE_URL=https://your-api-url.com
+cd /path/to/indian-stock-market-mcp
+npm install
+claude mcp add indian-stock-market -s user -- node $(pwd)/index.js
 ```
 
 ### Method 2: Manual Setup
 
 ```bash
-cd /Users/aswin/Documents/Projects/trade-assist/mcp-server
+cd /path/to/indian-stock-market-mcp
 ./setup.sh
-# Then manually edit ~/Library/Application Support/Claude/claude_desktop_config.json
+# Then manually add to your Claude config file (script shows you how)
 ```
 
 ---
@@ -52,14 +37,13 @@ claude mcp remove indian-stock-market
 ### Update MCP server
 ```bash
 claude mcp remove indian-stock-market
-claude mcp add indian-stock-market
-# Re-enter updated configuration
+claude mcp add indian-stock-market -s user -- node /path/to/indian-stock-market-mcp/index.js
 ```
 
 ### Check MCP server status
 ```bash
-# In Claude Code, type:
-/mcp list
+# In Claude Code:
+# Check available MCP tools to verify the server is connected
 ```
 
 ---
@@ -103,13 +87,13 @@ node index.js
 # Press Ctrl+C to stop
 ```
 
-### View Claude Code config
+### View Claude Desktop config
 ```bash
 # macOS
 cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
 
 # Linux
-cat ~/.config/claude-code/claude_desktop_config.json
+cat ~/.config/Claude/claude_desktop_config.json
 
 # Windows (PowerShell)
 Get-Content $env:APPDATA\Claude\claude_desktop_config.json
@@ -136,19 +120,12 @@ npm install
 node index.js
 ```
 
-### View Claude Code logs (macOS)
-```bash
-# Check Console.app for "Claude" or "MCP" logs
-open /Applications/Utilities/Console.app
-```
-
 ### Reset MCP server
 ```bash
 claude mcp remove indian-stock-market
 rm -rf node_modules package-lock.json
 npm install
-claude mcp add indian-stock-market
-# Re-configure
+claude mcp add indian-stock-market -s user -- node $(pwd)/index.js
 ```
 
 ---
@@ -156,32 +133,28 @@ claude mcp add indian-stock-market
 ## Quick Setup (Copy-Paste)
 
 ```bash
-# 1. Navigate to directory
-cd /Users/aswin/Documents/Projects/trade-assist/mcp-server
+# 1. Clone and enter directory
+git clone https://github.com/<your-username>/indian-stock-market-mcp.git
+cd indian-stock-market-mcp
 
 # 2. Install dependencies
 npm install
 
-# 3. Create .env file (edit with your credentials)
-cat > .env << 'EOF'
-INDIAN_STOCK_API_BASE_URL=https://your-api-url.com
-INDIAN_STOCK_API_KEY=your_api_key_here
-EOF
+# 3. Create .env file (edit with your credentials from https://indianapi.in)
+cp .env.example .env
+# Edit .env with your API key and base URL
 
 # 4. Add to Claude Code
-claude mcp add indian-stock-market \
-  --type node \
-  --command $(pwd)/index.js
+claude mcp add indian-stock-market -s user -- node $(pwd)/index.js
 
 # 5. Restart Claude Code
-# Quit Claude Code completely, then relaunch
 ```
 
 ---
 
-## Usage Examples in Claude Code
+## Usage Examples in Claude
 
-Once installed, try these commands in Claude Code:
+Once installed, try these queries in Claude:
 
 ### Basic stock query
 ```
@@ -228,17 +201,18 @@ Show me:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `INDIAN_STOCK_API_BASE_URL` | API base URL | `https://api.example.com` |
-| `INDIAN_STOCK_API_KEY` | Your API key | `sk_live_abc123...` |
+| `INDIAN_STOCK_API_BASE_URL` | API base URL from IndianAPI.in | `https://api.example.com` |
+| `INDIAN_STOCK_API_KEY` | Your API key from IndianAPI.in | `sk_live_abc123...` |
 
 **Where to set them:**
 
 1. **In `.env` file** (recommended):
-   ```
-   mcp-server/.env
+   ```bash
+   cp .env.example .env
+   # Edit with your credentials
    ```
 
-2. **In Claude Code config** (less secure):
+2. **In Claude config** (less secure):
    ```json
    "env": {
      "INDIAN_STOCK_API_KEY": "your_key",
@@ -254,25 +228,23 @@ Show me:
 
 ---
 
-## File Locations
+## Config File Locations
 
 | File | Path |
 |------|------|
-| MCP Server | `~/Documents/Projects/trade-assist/mcp-server/index.js` |
-| Config (macOS) | `~/Library/Application Support/Claude/claude_desktop_config.json` |
-| Config (Linux) | `~/.config/claude-code/claude_desktop_config.json` |
-| Config (Windows) | `%APPDATA%\Claude\claude_desktop_config.json` |
-| Environment | `~/Documents/Projects/trade-assist/mcp-server/.env` |
+| Claude Desktop Config (macOS) | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| Claude Desktop Config (Linux) | `~/.config/Claude/claude_desktop_config.json` |
+| Claude Desktop Config (Windows) | `%APPDATA%\Claude\claude_desktop_config.json` |
+| Environment Variables | `.env` in the project root |
 
 ---
 
 ## Getting Help
 
 1. **Check installation**: `npm start` (should run without errors)
-2. **View available tools**: `/mcp list` in Claude Code
-3. **Read documentation**: See `README.md` for detailed tool reference
-4. **Test API**: Use `npm test` to verify API connectivity
-5. **Check logs**: Look for errors in Claude Code console
+2. **Read documentation**: See `README.md` for detailed tool reference
+3. **Test API**: Use `npm test` to verify API connectivity
+4. **Check logs**: Look for errors in Claude console
 
 ---
 
@@ -281,22 +253,11 @@ Show me:
 | Issue | Command |
 |-------|---------|
 | MCP not found | `claude mcp list` to verify installation |
-| Wrong credentials | `claude mcp remove indian-stock-market && claude mcp add indian-stock-market` |
+| Wrong credentials | `claude mcp remove indian-stock-market` then re-add |
 | Server not starting | `node index.js` to see error messages |
 | Dependencies missing | `npm install` |
 | Config not found | Check file location for your OS above |
-| Tools not appearing | Restart Claude Code completely (Cmd+Q / Alt+F4) |
-
----
-
-## Version Information
-
-Check versions:
-```bash
-node --version   # Should be v18+
-npm --version    # Should be v9+
-claude --version # Claude Code CLI version
-```
+| Tools not appearing | Restart Claude completely (Cmd+Q / Alt+F4) |
 
 ---
 

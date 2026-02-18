@@ -3,11 +3,11 @@
     "indian-stock-market": {
       "command": "node",
       "args": [
-        "/Users/aswin/Documents/Projects/trade-assist/mcp-server/index.js"
+        "/absolute/path/to/indian-stock-market-mcp/index.js"
       ],
       "env": {
         "INDIAN_STOCK_API_KEY": "YOUR_API_KEY_HERE",
-        "INDIAN_STOCK_API_BASE_URL": "https://YOUR_API_BASE_URL_HERE"
+        "INDIAN_STOCK_API_BASE_URL": "YOUR_API_BASE_URL_HERE"
       }
     }
   }

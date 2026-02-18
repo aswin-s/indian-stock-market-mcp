@@ -1,6 +1,6 @@
 # Indian Stock Market MCP Server
 
-MCP (Model Context Protocol) server that provides Claude Code with real-time access to Indian stock market data through a comprehensive API.
+MCP (Model Context Protocol) server that provides Claude with real-time access to Indian stock market data through a comprehensive API.
 
 ## Features
 
@@ -27,6 +27,11 @@ This MCP server exposes 15 tools for accessing Indian stock market data:
 - **get_commodities** - Commodity prices
 - **search_industry** - Find stocks by sector/industry
 
+## Prerequisites
+
+- **Node.js 18+** ([Download](https://nodejs.org/))
+- **API Key** from [IndianAPI.in](https://indianapi.in/indian-stock-market) - subscribe to one of their plans to get your API key and base URL
+
 ## Installation
 
 ### Quick Install (Recommended)
@@ -34,12 +39,16 @@ This MCP server exposes 15 tools for accessing Indian stock market data:
 Use the Claude CLI to add the MCP server:
 
 ```bash
-cd mcp-server
+# Clone and install dependencies
+git clone https://github.com/<your-username>/indian-stock-market-mcp.git
+cd indian-stock-market-mcp
 npm install
-claude mcp add indian-stock-market
+
+# Add to Claude Code
+claude mcp add indian-stock-market -s user -- node $(pwd)/index.js
 ```
 
-Follow the interactive prompts to configure your API credentials.
+Then configure your API credentials in a `.env` file (see step 2 below).
 
 **See [INSTALL.md](INSTALL.md) for complete `claude mcp add` instructions.**
 
@@ -52,7 +61,8 @@ If you prefer manual setup:
 #### 1. Install Dependencies
 
 ```bash
-cd mcp-server
+git clone https://github.com/<your-username>/indian-stock-market-mcp.git
+cd indian-stock-market-mcp
 npm install
 ```
 
@@ -71,8 +81,6 @@ INDIAN_STOCK_API_BASE_URL=https://your-api-base-url.com
 INDIAN_STOCK_API_KEY=your_actual_api_key_here
 ```
 
-**Note**: The API key should be in the parent directory's `.env` file, or you can create a separate `.env` in the `mcp-server` directory.
-
 #### 3. Test the Server
 
 ```bash
@@ -81,13 +89,13 @@ npm start
 
 The server should start and output: `Indian Stock Market MCP Server running on stdio`
 
-#### 4. Add to Claude Code Configuration Manually
+#### 4. Add to Claude Desktop Configuration
 
-Add the MCP server to your Claude Code configuration:
+Add the MCP server to your Claude Desktop configuration file:
 
-### macOS/Linux
-
-Edit `~/.config/claude-code/claude_desktop_config.json`:
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Linux**: `~/.config/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -95,7 +103,7 @@ Edit `~/.config/claude-code/claude_desktop_config.json`:
     "indian-stock-market": {
       "command": "node",
       "args": [
-        "/Users/aswin/Documents/Projects/trade-assist/mcp-server/index.js"
+        "/absolute/path/to/indian-stock-market-mcp/index.js"
       ],
       "env": {
         "INDIAN_STOCK_API_KEY": "your_api_key_here",
@@ -106,36 +114,15 @@ Edit `~/.config/claude-code/claude_desktop_config.json`:
 }
 ```
 
-### Windows
+**Important**: Replace the path and API credentials with your actual values. The path must be absolute.
 
-Edit `%APPDATA%\Claude\claude_desktop_config.json`:
+### Restart Claude
 
-```json
-{
-  "mcpServers": {
-    "indian-stock-market": {
-      "command": "node",
-      "args": [
-        "C:\\Users\\YourUsername\\Documents\\Projects\\trade-assist\\mcp-server\\index.js"
-      ],
-      "env": {
-        "INDIAN_STOCK_API_KEY": "your_api_key_here",
-        "INDIAN_STOCK_API_BASE_URL": "https://your-api-base-url.com"
-      }
-    }
-  }
-}
-```
-
-**Important**: Replace the paths and API credentials with your actual values.
-
-### Restart Claude Code
-
-After adding the configuration, restart Claude Code for the changes to take effect.
+After adding the configuration, restart Claude for the changes to take effect.
 
 ## Usage Examples
 
-Once configured, you can use natural language in Claude Code to access market data:
+Once configured, you can use natural language in Claude to access market data:
 
 ### Example 1: Get Stock Details
 
@@ -249,7 +236,7 @@ To add a new tool:
 
 ### Response Filtering and Size Management
 
-**Important**: The MCP server automatically filters and limits API responses to stay within Claude Code's token limits (25,000 tokens):
+The MCP server automatically filters and limits API responses to stay within Claude's token limits:
 
 **Stock Details** (`get_stock_details`):
 - Extracts only essential fields (price, market cap, P/E, 52-week high/low, volume, sector)
@@ -288,30 +275,29 @@ Errors are returned to Claude in a structured format with details.
 
 ### "INDIAN_STOCK_API_KEY not found"
 
-Make sure your `.env` file exists and contains the API key, or the environment variable is set in the Claude Code configuration.
+Make sure your `.env` file exists and contains the API key, or the environment variable is set in the Claude configuration.
 
 ### "Cannot find module '@modelcontextprotocol/sdk'"
 
-Run `npm install` in the `mcp-server` directory.
+Run `npm install` in the project directory.
 
-### Server not appearing in Claude Code
+### Server not appearing in Claude
 
 1. Check the configuration file path is correct
 2. Verify the absolute path to `index.js` is correct
-3. Restart Claude Code completely
-4. Check Claude Code logs for errors
+3. Restart Claude completely
+4. Check logs for errors
 
 ### API requests timing out
 
-The default timeout is 30 seconds. If your API is slower, modify the `timeout` value in `apiClient` configuration.
+The default timeout is 30 seconds. If your API is slower, modify the `timeout` value in `createApiClient` in `index.js`.
 
 ### "MCP tool response exceeds maximum allowed tokens"
 
-**Fixed in v1.0.1**. The server now automatically filters and limits responses to stay within Claude Code's 25,000 token limit.
+The server automatically filters and limits responses. If you still encounter this:
 
-If you still encounter this error:
-1. Update to the latest version of the MCP server
-2. Restart Claude Code
+1. Update to the latest version
+2. Restart Claude
 3. Use more specific queries (e.g., "Get price and P/E for Tata Steel" instead of "Get everything about Tata Steel")
 4. For historical data, use shorter time periods (e.g., "1yr" instead of "max")
 
@@ -359,6 +345,6 @@ Contributions welcome! Please:
 
 For issues or questions:
 1. Check this README first
-2. Review Claude Code MCP documentation
+2. Review Claude MCP documentation
 3. Check API documentation for endpoint-specific issues
 4. Open an issue on GitHub

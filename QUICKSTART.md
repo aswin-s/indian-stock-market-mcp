@@ -5,20 +5,27 @@ Get the Indian Stock Market MCP Server running in 5 minutes.
 ## Prerequisites
 
 - Node.js 18+ installed ([Download](https://nodejs.org/))
-- Indian Stock API credentials (API key and base URL)
-- Claude Code installed
+- API credentials from [IndianAPI.in](https://indianapi.in/indian-stock-market) (subscribe to a plan to get your API key and base URL)
+- Claude Code or Claude Desktop installed
 
 ## Step 1: Install (2 minutes)
 
 ```bash
-cd /Users/aswin/Documents/Projects/trade-assist/mcp-server
+git clone https://github.com/<your-username>/indian-stock-market-mcp.git
+cd indian-stock-market-mcp
+npm install
+```
+
+Or run the setup script:
+
+```bash
 ./setup.sh
 ```
 
 The setup script will:
 - Install npm dependencies
 - Create `.env` file from template
-- Show you the Claude Code configuration
+- Show you the Claude configuration options
 
 ## Step 2: Configure API Credentials (1 minute)
 
@@ -28,16 +35,12 @@ Edit the `.env` file:
 nano .env  # or use your preferred editor
 ```
 
-Add your actual credentials:
+Add your credentials from [IndianAPI.in](https://indianapi.in/indian-stock-market):
 
 ```env
 INDIAN_STOCK_API_BASE_URL=https://your-actual-api-url.com
 INDIAN_STOCK_API_KEY=your_actual_api_key_here
 ```
-
-**Where to find these**:
-- Check your parent directory `.env` file: `../env`
-- Or get them from your API provider dashboard
 
 ## Step 3: Test the Server (30 seconds)
 
@@ -49,27 +52,21 @@ You should see: `Indian Stock Market MCP Server running on stdio`
 
 Press `Ctrl+C` to stop.
 
-## Step 4: Add to Claude Code (1 minute)
+## Step 4: Add to Claude (1 minute)
 
-### macOS
+### Option A: Claude CLI (Recommended)
 
-1. Open `~/Library/Application Support/Claude/claude_desktop_config.json`
-2. Add the MCP server configuration (the setup script showed you this)
-3. Save the file
+```bash
+claude mcp add indian-stock-market -s user -- node $(pwd)/index.js
+```
 
-### Linux
+### Option B: Manual Config
 
-1. Open `~/.config/claude-code/claude_desktop_config.json`
-2. Add the MCP server configuration
-3. Save the file
+Add to your Claude Desktop config file:
 
-### Windows
-
-1. Open `%APPDATA%\Claude\claude_desktop_config.json`
-2. Add the MCP server configuration
-3. Save the file
-
-**Example configuration**:
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Linux**: `~/.config/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -77,7 +74,7 @@ Press `Ctrl+C` to stop.
     "indian-stock-market": {
       "command": "node",
       "args": [
-        "/Users/aswin/Documents/Projects/trade-assist/mcp-server/index.js"
+        "/absolute/path/to/indian-stock-market-mcp/index.js"
       ],
       "env": {
         "INDIAN_STOCK_API_KEY": "your_actual_key",
@@ -88,13 +85,15 @@ Press `Ctrl+C` to stop.
 }
 ```
 
-## Step 5: Restart Claude Code (30 seconds)
+**Important**: Replace the path with the absolute path to where you cloned the repo.
 
-Completely quit and restart Claude Code for the changes to take effect.
+## Step 5: Restart Claude (30 seconds)
 
-## Step 6: Test in Claude Code (30 seconds)
+Completely quit and restart Claude for the changes to take effect.
 
-Open Claude Code and try:
+## Step 6: Test in Claude (30 seconds)
+
+Open Claude and try:
 
 ```
 Get me the latest details for Tata Steel
@@ -110,24 +109,24 @@ Claude should now use the MCP server tools to fetch live market data!
 
 ## Troubleshooting
 
-### Server not appearing in Claude Code
+### Server not appearing in Claude
 
-1. Check the path in `claude_desktop_config.json` is correct and absolute
+1. Check the path in your config is correct and absolute
 2. Verify your API credentials in `.env` or config
 3. Try running `npm start` manually to check for errors
-4. Restart Claude Code completely (Cmd+Q / Alt+F4, then relaunch)
+4. Restart Claude completely (Cmd+Q / Alt+F4, then relaunch)
 
 ### "API key not found" error
 
 Make sure the API key is either:
-- In the `.env` file in the `mcp-server` directory, OR
-- In the `env` section of your Claude Code config
+- In the `.env` file in the project directory, OR
+- In the `env` section of your Claude config
 
 ### Connection errors
 
 - Verify your `INDIAN_STOCK_API_BASE_URL` is correct
 - Check your internet connection
-- Verify the API service is operational
+- Verify the API service is operational at [IndianAPI.in](https://indianapi.in)
 
 ## Next Steps
 
@@ -172,11 +171,3 @@ Give me today's market briefing:
 - Latest market news
 - Commodity prices
 ```
-
-## Support
-
-- Full documentation: `README.md`
-- API reference: `../indian-stock-api.json`
-- Issues: Check server logs with `npm start`
-
-Enjoy live market data in Claude Code! 🚀📈
